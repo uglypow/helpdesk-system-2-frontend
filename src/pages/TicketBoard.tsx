@@ -1,13 +1,15 @@
 import { useQuery } from "@tanstack/react-query";
 import { FC } from "react";
-import { getAllTicket } from "../api/tickets";
+import { getAllTicket, updateTicketStatus } from "../api/tickets";
+import TicketCard from "../components/TicketCard";
 import "../global.scss";
+import { ITicket } from "../types/ITicket";
+import CreateTicketButton from "../components/CreateTicketButton";
 
 const TicketBoard: FC = () => {
-  const { isLoading, isSuccess, isError, data, refetch } = useQuery({
+  const { isLoading, isError, data, refetch } = useQuery({
     queryKey: ["allTickets"],
     queryFn: getAllTicket,
-    enabled: false,
   });
 
   if (isLoading) {
@@ -18,27 +20,32 @@ const TicketBoard: FC = () => {
     );
   }
 
+  const handleCreate = () => {
+    refetch();
+  };
+
+  const handleUpdateStatus = async (
+    event: React.ChangeEvent<{ value: unknown }>
+  ) => {
+    // const updatedStatus = {
+    //   status: event.target.value as string,
+    // };
+    // const selectedTicket: ITicket = selected!;
+    // try {
+    //   await updateTicketStatus(selectedTicket.id, updatedStatus);
+    // } catch (error: unknown) {
+    //   if (error instanceof AxiosError) alert(error.response?.data.message);
+    // }
+    // refetch();
+  };
+
   return (
     <div>
-      <button
-        onClick={() => refetch()}
-        className="w-[200px] h-[50px] bg-red-500 text-white"
-      >
-        Get All Ticket
-      </button>
-
+      <CreateTicketButton handleCreate={handleCreate} />
       {data && (
-        <div className="">
-          {data.map((item: any) => (
-            <div key={item.id} className="grid grid-cols-4 gap-[16px]">
-              <div className="flex flex-col gap-[8px] items-center bg-yellow-500">
-                <div className="p-4">
-                  <p>title: {item.title}</p>
-                  <p>description: {item.description}</p>
-                  <p>contact: {item.contact}</p>
-                </div>
-              </div>
-            </div>
+        <div className="grid grid-cols-4 gap-[16px] p-4 grid-">
+          {data.map((item: ITicket) => (
+            <TicketCard key={item.id} ticket={item} handleUpdateStatus={handleUpdateStatus} />
           ))}
         </div>
       )}

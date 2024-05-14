@@ -13,6 +13,21 @@ export async function createTicket(newObject: any): Promise<any> {
 }
 
 export async function updateTicket(id: string, newObject: any): Promise<any> {
-  const response = await axios.put(base_url, newObject);
+  const response = await axios.put(`${base_url}/${id}`, newObject);
   return response.data;
+}
+
+export async function updateTicketStatus(
+  id: string,
+  status: any
+): Promise<any> {
+  const response = await axios.patch(`${base_url}/${id}`, status);
+}
+
+export async function deleteTicket(id: string): Promise<any> {
+  try {
+    await axios.delete(`${base_url}/${id}`);
+  } catch (error) {
+    console.log(error);
+  }
 }

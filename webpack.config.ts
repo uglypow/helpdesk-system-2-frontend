@@ -60,7 +60,8 @@ const config: ConfigOptions = {
     }),
   ],
   resolve: {
-    extensions: [".js", ".ts", ".jsx", ".tsx"],
+    extensions: ["", ".js", ".ts", ".jsx", ".tsx"],
+    modules: ["node_modules"],
   },
   devtool: "source-map",
 };
