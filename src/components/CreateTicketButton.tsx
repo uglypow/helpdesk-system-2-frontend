@@ -7,10 +7,10 @@ import {
   TextField,
 } from "@mui/material";
 import { FC, useState } from "react";
-import { createTicket } from "../api/tickets";
+import { ICreateTicketRequest } from "../types/ITicket";
 
 interface CreateTicketButtonProps {
-  handleCreate: () => void;
+  handleCreate: (body: ICreateTicketRequest) => Promise<void>;
 }
 
 const CreateTicketButton: FC<CreateTicketButtonProps> = ({ handleCreate }) => {
@@ -39,9 +39,12 @@ const CreateTicketButton: FC<CreateTicketButtonProps> = ({ handleCreate }) => {
           }) => {
             event.preventDefault();
             const formData = new FormData(event.currentTarget);
-            const formJson = Object.fromEntries(formData.entries());
-            await createTicket(formJson);
-            handleCreate();
+            const formJson: any = Object.fromEntries(formData.entries());
+            const ticket: ICreateTicketRequest = {
+              title: formJson.title,
+              description: formJson.description,
+            };
+            handleCreate(ticket);
             handleDialog();
           },
         }}
@@ -55,16 +58,6 @@ const CreateTicketButton: FC<CreateTicketButtonProps> = ({ handleCreate }) => {
             id="title"
             name="title"
             label="Title"
-            type="text"
-            fullWidth
-            variant="standard"
-          />
-          <TextField
-            required
-            margin="dense"
-            id="contact"
-            name="contact"
-            label="Contact"
             type="text"
             fullWidth
             variant="standard"

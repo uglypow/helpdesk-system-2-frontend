@@ -1,21 +1,28 @@
 import dayjs from "dayjs";
-import { FC } from "react";
+import { ChangeEvent } from "react";
 import { ITicket } from "../types/ITicket";
+import { TicketStatus } from "../types/TicketStatus";
+import UpdateTicketButton from "./UpdateTicketButton";
 
 interface TicketCardProps {
   ticket: ITicket;
-  handleUpdateStatus: (event: React.ChangeEvent<{ value: unknown }>) => void;
+  handleUpdate: (ticketId: string, body: any) => Promise<void>;
+  handleUpdateStatus: (
+    event: ChangeEvent<HTMLSelectElement>,
+    ticket: ITicket
+  ) => Promise<void>;
 }
 
-const TicketCard: FC<TicketCardProps> = ({ ticket, handleUpdateStatus }) => {
+const TicketCard: React.FC<TicketCardProps> = ({
+  ticket,
+  handleUpdate,
+  handleUpdateStatus,
+}) => {
   return (
-    <div
-      className="flex flex-col gap-[8px] items-center bg-white m-1
-                border-4 hover:border-blue-400 cursor-pointer"
-    >
-      <div className="p-2 m-2 flex flex-col justify-items-start">
-        <div>Title: {ticket.title}</div>
-        <div>
+    <div className="bg-white border-4 p-4 m-2 flex flex-col justify-between h-[250px]">
+      <div className="mb-2">
+        <div className="text-xl font-semibold mb-1">Title: {ticket.title}</div>
+        <div className="text-sm mb-1">
           Description:{" "}
           {ticket.description.length > 60 ? (
             <span>{`${ticket.description.substring(0, 60)}...`}</span>
@@ -23,20 +30,32 @@ const TicketCard: FC<TicketCardProps> = ({ ticket, handleUpdateStatus }) => {
             <span>{ticket.description}</span>
           )}
         </div>
-        <div>Contact: {ticket.contact}</div>
-        <div>
+        <div className="text-sm mb-1">
           Create at: {dayjs(ticket.created_at).format("MMMM YYYY, dddd")}
         </div>
-        <div>
+        <div className="text-sm mb-1">
           Updated at: {dayjs(ticket.updated_at).format("MMMM YYYY, dddd")}
         </div>
-        Status:{" "}
-        <select value={ticket.status} onChange={(e) => handleUpdateStatus(e)}>
-          <option value="PENDING">Pending</option>
-          <option value="IN_PROGRESS">In Progress</option>
-          <option value="ACCEPTED">Accepted</option>
-          <option value="CANCELLED">Cancelled</option>
+      </div>
+
+      <div className="flex flex-col">
+        <select
+          value={ticket.status}
+          className="bg-blue-500 text-white font-semibold rounded-xl h-[30px] mt-2"
+          onChange={(e) => {
+            e.preventDefault();
+            handleUpdateStatus(e, ticket);
+            alert("Ticket has been updated");
+          }}
+        >
+          <option value={TicketStatus.PENDING}>Pending</option>
+          <option value={TicketStatus.IN_PROGRESS}>In Progress</option>
+          <option value={TicketStatus.COMPLETED}>Completed</option>
+          <option value={TicketStatus.CANCELLED}>Cancelled</option>
         </select>
+        <div className="text-center mt-2">
+          <UpdateTicketButton ticket={ticket} handleUpdate={handleUpdate} />
+        </div>
       </div>
     </div>
   );

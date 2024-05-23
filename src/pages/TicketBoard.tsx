@@ -1,53 +1,54 @@
-import { useQuery } from "@tanstack/react-query";
+import { Button } from "@mui/material";
 import { FC } from "react";
-import { getAllTicket, updateTicketStatus } from "../api/tickets";
+import { useNavigate } from "react-router-dom";
+import CreateTicketButton from "../components/CreateTicketButton";
 import TicketCard from "../components/TicketCard";
 import "../global.scss";
+import { fetchTicket } from "../hooks/fetchTicket";
 import { ITicket } from "../types/ITicket";
-import CreateTicketButton from "../components/CreateTicketButton";
 
 const TicketBoard: FC = () => {
-  const { isLoading, isError, data, refetch } = useQuery({
-    queryKey: ["allTickets"],
-    queryFn: getAllTicket,
-  });
+  const navigate = useNavigate();
+  const ticket = fetchTicket();
 
-  if (isLoading) {
+  if (ticket.isLoading) {
     return (
-      <div className="flex w-screen h-screen justify-center items-center">
-        Loading ... {isError && "(Error occured, please try again)"}
+      <div className="flex w-screen h-screen justify-center items-center text-3xl font-bold">
+        Loading ... {ticket.isError && "(Error occured, please try again)"}
       </div>
     );
   }
 
-  const handleCreate = () => {
-    refetch();
-  };
-
-  const handleUpdateStatus = async (
-    event: React.ChangeEvent<{ value: unknown }>
-  ) => {
-    // const updatedStatus = {
-    //   status: event.target.value as string,
-    // };
-    // const selectedTicket: ITicket = selected!;
-    // try {
-    //   await updateTicketStatus(selectedTicket.id, updatedStatus);
-    // } catch (error: unknown) {
-    //   if (error instanceof AxiosError) alert(error.response?.data.message);
-    // }
-    // refetch();
-  };
-
   return (
     <div>
-      <CreateTicketButton handleCreate={handleCreate} />
-      {data && (
-        <div className="grid grid-cols-4 gap-[16px] p-4 grid-">
-          {data.map((item: ITicket) => (
-            <TicketCard key={item.id} ticket={item} handleUpdateStatus={handleUpdateStatus} />
-          ))}
+      {ticket.data === undefined ? (
+        <div className="flex flex-col gap-2 w-screen h-screen justify-center items-center text-3xl font-bold">
+          <div>No data...</div>
+          <span className="text-base font-sans">
+            <Button
+              onClick={() => {
+                navigate("/login");
+              }}
+            >
+              Click Here
+            </Button>{" "}
+            to login
+          </span>
         </div>
+      ) : (
+        <>
+          <CreateTicketButton handleCreate={ticket.handleCreate} />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
+            {ticket.data.map((item: ITicket) => (
+              <TicketCard
+                key={item.ticket_id}
+                ticket={item}
+                handleUpdate={ticket.handleUpdate}
+                handleUpdateStatus={ticket.handleUpdateStatus}
+              />
+            ))}
+          </div>
+        </>
       )}
     </div>
   );

@@ -1,9 +1,18 @@
 export interface ITicket {
-  id: string;
+  ticket_id: string;
   title: string;
   description: string;
-  contact: string;
   status: string;
   created_at: Date;
   updated_at: Date;
+}
+
+export interface IUpdateTicketRequest {
+  title?: string;
+  description?: string;
+}
+
+export interface ICreateTicketRequest {
+  title: string;
+  description?: string;
 }

@@ -6,13 +6,13 @@ import {
   DialogTitle,
   TextField,
 } from "@mui/material";
+import dayjs from "dayjs";
 import { FC, useState } from "react";
-import { updateTicket } from "../api/tickets";
-import { ITicket } from "../types/ITicket";
+import { ITicket, IUpdateTicketRequest } from "../types/ITicket";
 
 interface UpdateTicketButtonProp {
   ticket: ITicket;
-  handleUpdate: () => void;
+  handleUpdate: (ticketId: string, body: any) => Promise<void>;
 }
 
 const UpdateTicketButton: FC<UpdateTicketButtonProp> = ({
@@ -31,7 +31,7 @@ const UpdateTicketButton: FC<UpdateTicketButtonProp> = ({
 
   return (
     <>
-      <Button onClick={handleOpen}>Update</Button>
+      <Button onClick={handleOpen}>Edit</Button>
       <Dialog
         open={formOpen}
         onClose={handleClose}
@@ -43,9 +43,12 @@ const UpdateTicketButton: FC<UpdateTicketButtonProp> = ({
           }) => {
             event.preventDefault();
             const formData = new FormData(event.currentTarget);
-            const formJson = Object.fromEntries(formData.entries());
-            await updateTicket(ticket.id, formJson);
-            handleUpdate();
+            const formJson: any = Object.fromEntries(formData.entries());
+            const newTicket: IUpdateTicketRequest = {
+              title: formJson.title,
+              description: formJson.description,
+            };
+            handleUpdate(ticket.ticket_id, newTicket);
             handleClose();
           },
         }}
@@ -56,13 +59,13 @@ const UpdateTicketButton: FC<UpdateTicketButtonProp> = ({
             autoFocus
             disabled
             margin="dense"
-            id="id"
-            name="id"
-            label="id"
+            id="ticket_id"
+            name="ticket_id"
+            label="ticket_id"
             type="text"
             fullWidth
             variant="standard"
-            defaultValue={ticket.id}
+            defaultValue={ticket.ticket_id}
           />
           <TextField
             autoFocus
@@ -75,17 +78,6 @@ const UpdateTicketButton: FC<UpdateTicketButtonProp> = ({
             fullWidth
             variant="standard"
             defaultValue={ticket.title}
-          />
-          <TextField
-            required
-            margin="dense"
-            id="contact"
-            name="contact"
-            label="Contact"
-            type="text"
-            fullWidth
-            variant="standard"
-            defaultValue={ticket.contact}
           />
           <TextField
             multiline
@@ -109,7 +101,9 @@ const UpdateTicketButton: FC<UpdateTicketButtonProp> = ({
             type="text"
             fullWidth
             variant="standard"
-            defaultValue={ticket.created_at}
+            defaultValue={dayjs(ticket.created_at).format(
+              "dddd/MMMM/YYYY, hh:mm:ss"
+            )}
           />
           <TextField
             autoFocus
@@ -121,7 +115,9 @@ const UpdateTicketButton: FC<UpdateTicketButtonProp> = ({
             type="text"
             fullWidth
             variant="standard"
-            defaultValue={ticket.updated_at}
+            defaultValue={dayjs(ticket.updated_at).format(
+              "dddd/MMMM/YYYY, hh:mm:ss"
+            )}
           />
         </DialogContent>
         <DialogActions>

@@ -1,9 +1,15 @@
 import { FC } from "react";
+import { useBearStore } from "../store/store";
 
 const About: FC = () => {
+  const bears = useBearStore((state) => state.bears);
+
+  const increasePopulation = useBearStore((state) => state.increasePopulation);
+
   return (
     <div className="flex justify-center items-center h-screen">
-      <div className="font-bold text-4xl text-sky">About</div>
+      <h1>{bears} around here ...</h1>
+      <button onClick={increasePopulation}>one up</button>
     </div>
   );
 };

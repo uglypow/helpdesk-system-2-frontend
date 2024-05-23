@@ -1,6 +1,8 @@
+import dotenv from "dotenv";
 import HtmlWebpackPlugin from "html-webpack-plugin";
 import MiniCssExtractPlugin from "mini-css-extract-plugin";
 import path from "path";
+import { DefinePlugin } from "webpack";
 import { ConfigOptions } from "webpack-cli";
 import "webpack-dev-server";
 
@@ -52,11 +54,11 @@ const config: ConfigOptions = {
     new HtmlWebpackPlugin({
       template: "./public/index.html",
     }),
-    new HtmlWebpackPlugin({
-      template: "./public/index.html",
-    }),
     new MiniCssExtractPlugin({
       filename: "status/css/[name].css",
+    }),
+    new DefinePlugin({
+      "process.env": JSON.stringify(dotenv.config().parsed),
     }),
   ],
   resolve: {
@@ -64,6 +66,11 @@ const config: ConfigOptions = {
     modules: ["node_modules"],
   },
   devtool: "source-map",
+  performance: {
+    hints: false,
+    maxEntrypointSize: 512000,
+    maxAssetSize: 512000,
+  },
 };
 
 export default config;
